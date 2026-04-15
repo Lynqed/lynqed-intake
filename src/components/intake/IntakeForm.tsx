@@ -221,7 +221,7 @@ const IntakeForm = () => {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold tracking-wider text-primary uppercase">Lynqed</span>
+            <img src={lynqedLogo} alt="Lynqed" className="h-7" />
             <span className="text-xs text-muted-foreground">Intake formulier</span>
           </div>
           <ProgressBar currentStep={step} totalSteps={totalSteps} />
