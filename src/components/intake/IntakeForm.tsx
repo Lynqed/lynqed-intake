@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import ProgressBar from "./ProgressBar";
 import ScaleInput from "./ScaleInput";
+import lynqedLogo from "@/assets/lynqed-logo.png";
 
 interface FormData {
   company_info: {
@@ -87,7 +89,9 @@ const IntakeForm = () => {
   };
 
   const handleSubmit = () => {
+    // TODO: Save to database when Lovable Cloud is enabled
     console.log("Intake submitted:", JSON.stringify(data, null, 2));
+    toast.success("Intake succesvol verstuurd!");
     setSubmitted(true);
   };
 
@@ -99,8 +103,8 @@ const IntakeForm = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-hero-start to-hero-end flex items-center justify-center p-6">
         <div className="max-w-xl text-center space-y-8">
-          <div className="space-y-1">
-            <p className="text-primary-foreground/60 text-sm font-medium tracking-widest uppercase">Lynqed</p>
+          <div className="flex justify-center">
+            <img src={lynqedLogo} alt="Lynqed" className="h-12" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground leading-tight">
             Intake – inzicht in jouw bedrijf en marketing
@@ -130,8 +134,9 @@ const IntakeForm = () => {
       <div className="min-h-screen bg-gradient-to-br from-hero-start to-hero-end flex items-center justify-center p-6">
         <div className="max-w-lg text-center space-y-6">
           <div className="flex justify-center">
-            <CheckCircle2 className="h-16 w-16 text-primary" />
+            <img src={lynqedLogo} alt="Lynqed" className="h-10 mb-2" />
           </div>
+          <CheckCircle2 className="h-14 w-14 text-primary mx-auto" />
           <h1 className="text-3xl font-bold text-primary-foreground">
             Bedankt – we gaan hiermee aan de slag
           </h1>
@@ -139,14 +144,14 @@ const IntakeForm = () => {
             Op basis van deze intake bereiden we een gerichte analyse voor van jullie marketing, website en groeikansen. Deze nemen we mee in de volgende stap.
           </p>
           <div className="pt-4">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 rounded-xl"
-              onClick={() => window.open("https://lynqed.frl", "_blank")}
+            <a
+              href="https://lynqed.frl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center h-11 px-8 rounded-xl border-2 border-primary text-primary font-medium text-sm hover:bg-primary/10 transition-colors"
             >
               Terug naar website
-            </Button>
+            </a>
           </div>
         </div>
       </div>
