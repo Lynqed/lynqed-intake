@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Send, CheckCircle2, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ProgressBar from "./ProgressBar";
 import ScaleInput from "./ScaleInput";
@@ -59,6 +60,7 @@ const IntakeForm = () => {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>(initialData);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalSteps = 5;
 
@@ -83,10 +85,25 @@ const IntakeForm = () => {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Intake submitted:", JSON.stringify(data, null, 2));
-    toast.success("Intake succesvol verstuurd!");
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from("intake_submissions").insert({
+        company_info: data.company_info as any,
+        goals: data.goals as any,
+        target: data.target as any,
+        marketing: data.marketing as any,
+        samenwerking: data.samenwerking as any,
+      });
+      if (error) throw error;
+      toast.success("Intake succesvol verstuurd!");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Er ging iets mis bij het versturen. Probeer het opnieuw.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const next = () => setStep((s) => Math.min(s + 1, totalSteps));
@@ -523,9 +540,18 @@ const IntakeForm = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} className="px-8 rounded-xl">
-                Verstuur intake
-                <Send className="ml-2 h-4 w-4" />
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="px-8 rounded-xl">
+                {isSubmitting ? (
+                  <>
+                    Versturen...
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Verstuur intake
+                    <Send className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
             )}
           </div>
