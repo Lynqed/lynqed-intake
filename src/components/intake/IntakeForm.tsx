@@ -540,10 +540,18 @@ const IntakeForm = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} className="px-8 rounded-xl">
-                Verstuur intake
-                <Send className="ml-2 h-4 w-4" />
-              </Button>
+              <Button onClick={handleSubmit} disabled={isSubmitting} className="px-8 rounded-xl">
+                {isSubmitting ? (
+                  <>
+                    Versturen...
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Verstuur intake
+                    <Send className="ml-2 h-4 w-4" />
+                  </>
+                )}
             )}
           </div>
         </div>
