@@ -85,10 +85,25 @@ const IntakeForm = () => {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Intake submitted:", JSON.stringify(data, null, 2));
-    toast.success("Intake succesvol verstuurd!");
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from("intake_submissions").insert({
+        company_info: data.company_info as any,
+        goals: data.goals as any,
+        target: data.target as any,
+        marketing: data.marketing as any,
+        samenwerking: data.samenwerking as any,
+      });
+      if (error) throw error;
+      toast.success("Intake succesvol verstuurd!");
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Submit error:", err);
+      toast.error("Er ging iets mis bij het versturen. Probeer het opnieuw.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const next = () => setStep((s) => Math.min(s + 1, totalSteps));
