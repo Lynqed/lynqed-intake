@@ -15,8 +15,12 @@ interface FormData {
     branche: string;
     omschrijving: string;
   };
-  offer_target: {
-    product_dienst: string;
+  goals: {
+    doelen_3_6_maanden: string;
+    wat_opleveren: string;
+    wanneer_succesvol: string;
+  };
+  target: {
     ideale_klant: string;
     ideale_klant_toelichting: string;
     doelgroep_specifiek: number;
@@ -25,20 +29,14 @@ interface FormData {
   marketing: {
     kanalen: string[];
     budget: string;
-    resultaat: string;
-    lead_stabiliteit: number;
+    leads_per_maand: string;
+    website_tevredenheid: number;
+    tracking_inzicht: string;
   };
-  website: {
-    tevredenheid: number;
-    doel: string;
-    afhaakmomenten: string;
-  };
-  process: {
-    opvolging: string;
+  samenwerking: {
     bottleneck: string;
-    doelen: string;
-  };
-  contact: {
+    verwachtingen: string;
+    betrokkenen: string;
     naam: string;
     email: string;
     telefoon: string;
@@ -47,25 +45,22 @@ interface FormData {
 
 const initialData: FormData = {
   company_info: { bedrijfsnaam: "", website_url: "", branche: "", omschrijving: "" },
-  offer_target: { product_dienst: "", ideale_klant: "", ideale_klant_toelichting: "", doelgroep_specifiek: 0, klantwaarde: "" },
-  marketing: { kanalen: [], budget: "", resultaat: "", lead_stabiliteit: 0 },
-  website: { tevredenheid: 0, doel: "", afhaakmomenten: "" },
-  process: { opvolging: "", bottleneck: "", doelen: "" },
-  contact: { naam: "", email: "", telefoon: "" },
+  goals: { doelen_3_6_maanden: "", wat_opleveren: "", wanneer_succesvol: "" },
+  target: { ideale_klant: "", ideale_klant_toelichting: "", doelgroep_specifiek: 0, klantwaarde: "" },
+  marketing: { kanalen: [], budget: "", leads_per_maand: "", website_tevredenheid: 0, tracking_inzicht: "" },
+  samenwerking: { bottleneck: "", verwachtingen: "", betrokkenen: "", naam: "", email: "", telefoon: "" },
 };
 
 const MARKETING_KANALEN = ["Google Ads", "SEO", "Social ads", "E-mailmarketing", "Geen structurele marketing"];
 const BUDGET_OPTIONS = ["€0 – €500", "€500 – €2.000", "€2.000 – €5.000", "€5.000 – €15.000", "€15.000+"];
 const KLANT_OPTIONS = ["Particulier", "Zakelijk (B2B)", "Beide"];
-const DOEL_OPTIONS = ["Leads genereren", "Directe verkoop", "Informatie / branding", "Anders"];
-const OPVOLGING_OPTIONS = ["Gestructureerd proces", "Handmatig / wisselend", "Nauwelijks / geen proces"];
 
 const IntakeForm = () => {
-  const [step, setStep] = useState(0); // 0 = intro
+  const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>(initialData);
   const [submitted, setSubmitted] = useState(false);
 
-  const totalSteps = 6;
+  const totalSteps = 5;
 
   const updateField = <K extends keyof FormData>(
     section: K,
@@ -89,7 +84,6 @@ const IntakeForm = () => {
   };
 
   const handleSubmit = () => {
-    // TODO: Save to database when Lovable Cloud is enabled
     console.log("Intake submitted:", JSON.stringify(data, null, 2));
     toast.success("Intake succesvol verstuurd!");
     setSubmitted(true);
@@ -141,7 +135,7 @@ const IntakeForm = () => {
             Bedankt – we gaan hiermee aan de slag
           </h1>
           <p className="text-primary-foreground/75 text-lg leading-relaxed">
-            Op basis van deze intake bereiden we een gerichte analyse voor van jullie marketing, website en groeikansen. Deze nemen we mee in de volgende stap.
+            Op basis van deze intake bereiden we een gerichte analyse voor die we meenemen in de volgende stap.
           </p>
           <div className="pt-4">
             <a
@@ -160,6 +154,10 @@ const IntakeForm = () => {
 
   const Label = ({ children }: { children: React.ReactNode }) => (
     <label className="block text-sm font-medium text-foreground mb-1.5">{children}</label>
+  );
+
+  const HelperText = ({ children }: { children: React.ReactNode }) => (
+    <p className="text-xs text-muted-foreground mt-1.5">{children}</p>
   );
 
   const OptionButton = ({
@@ -206,13 +204,27 @@ const IntakeForm = () => {
     </button>
   );
 
-  const sectionTitles: Record<number, string> = {
-    1: "Bedrijf & context",
-    2: "Aanbod & doelgroep",
-    3: "Marketing & kanalen",
-    4: "Website & conversie",
-    5: "Proces & groei",
-    6: "Contactgegevens",
+  const sectionConfig: Record<number, { title: string; intro: string }> = {
+    1: {
+      title: "Bedrijf & basis",
+      intro: "Om goed van start te gaan, willen we eerst een helder beeld krijgen van jullie bedrijf en wat jullie doen.",
+    },
+    2: {
+      title: "Doelen & richting",
+      intro: "In dit onderdeel willen we begrijpen waar jullie naartoe willen groeien en wat deze samenwerking moet opleveren.",
+    },
+    3: {
+      title: "Doelgroep & positionering",
+      intro: "Hier kijken we naar wie jullie willen bereiken en hoe jullie je onderscheiden.",
+    },
+    4: {
+      title: "Huidige marketing & website",
+      intro: "Dit geeft inzicht in wat er nu al gebeurt en waar mogelijk kansen liggen.",
+    },
+    5: {
+      title: "Samenwerking & verwachtingen",
+      intro: "Tot slot stemmen we af hoe de samenwerking eruit moet zien.",
+    },
   };
 
   return (
@@ -231,12 +243,17 @@ const IntakeForm = () => {
       {/* Form content */}
       <main className="flex-1 flex items-start justify-center py-10 px-6">
         <div className="w-full max-w-2xl space-y-8">
+          {/* Section header */}
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{sectionTitles[step]}</h2>
-            <div className="h-px bg-border mt-4" />
+            <h2 className="text-2xl font-bold text-foreground">{sectionConfig[step].title}</h2>
+            <p className="text-muted-foreground text-sm mt-2 leading-relaxed">
+              {sectionConfig[step].intro}
+            </p>
+            <div className="h-px bg-border mt-5" />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-7">
+            {/* STEP 1 — Bedrijf & basis */}
             {step === 1 && (
               <>
                 <div>
@@ -279,34 +296,62 @@ const IntakeForm = () => {
               </>
             )}
 
+            {/* STEP 2 — Doelen & richting */}
             {step === 2 && (
               <>
                 <div>
-                  <Label>Wat is jullie belangrijkste product of dienst?</Label>
+                  <Label>Wat willen jullie de komende 3–6 maanden bereiken?</Label>
                   <Textarea
-                    value={data.offer_target.product_dienst}
-                    onChange={(e) => updateField("offer_target", "product_dienst", e.target.value)}
-                    placeholder="Beschrijf jullie kernproduct of -dienst"
+                    value={data.goals.doelen_3_6_maanden}
+                    onChange={(e) => updateField("goals", "doelen_3_6_maanden", e.target.value)}
+                    placeholder="Bijv. meer leads, hogere omzet, betere online zichtbaarheid..."
                     rows={3}
                     className="bg-card resize-none"
                   />
                 </div>
+                <div>
+                  <Label>Wat moet dit traject opleveren?</Label>
+                  <Textarea
+                    value={data.goals.wat_opleveren}
+                    onChange={(e) => updateField("goals", "wat_opleveren", e.target.value)}
+                    placeholder="Beschrijf het gewenste resultaat van deze samenwerking"
+                    rows={3}
+                    className="bg-card resize-none"
+                  />
+                </div>
+                <div>
+                  <Label>Wanneer is het voor jullie succesvol?</Label>
+                  <Textarea
+                    value={data.goals.wanneer_succesvol}
+                    onChange={(e) => updateField("goals", "wanneer_succesvol", e.target.value)}
+                    placeholder="Bijv. X aantal leads per maand, bepaalde omzetgroei..."
+                    rows={3}
+                    className="bg-card resize-none"
+                  />
+                  <HelperText>Je hoeft dit niet perfect te formuleren, een duidelijke richting is voldoende.</HelperText>
+                </div>
+              </>
+            )}
+
+            {/* STEP 3 — Doelgroep & positionering */}
+            {step === 3 && (
+              <>
                 <div>
                   <Label>Wie is jullie ideale klant?</Label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {KLANT_OPTIONS.map((opt) => (
                       <OptionButton
                         key={opt}
-                        selected={data.offer_target.ideale_klant === opt}
-                        onClick={() => updateField("offer_target", "ideale_klant", opt)}
+                        selected={data.target.ideale_klant === opt}
+                        onClick={() => updateField("target", "ideale_klant", opt)}
                       >
                         {opt}
                       </OptionButton>
                     ))}
                   </div>
                   <Input
-                    value={data.offer_target.ideale_klant_toelichting}
-                    onChange={(e) => updateField("offer_target", "ideale_klant_toelichting", e.target.value)}
+                    value={data.target.ideale_klant_toelichting}
+                    onChange={(e) => updateField("target", "ideale_klant_toelichting", e.target.value)}
                     placeholder="Optioneel: toelichting op de doelgroep"
                     className="bg-card mt-2"
                   />
@@ -314,8 +359,8 @@ const IntakeForm = () => {
                 <div>
                   <Label>Hoe specifiek is jullie doelgroep momenteel gedefinieerd?</Label>
                   <ScaleInput
-                    value={data.offer_target.doelgroep_specifiek}
-                    onChange={(v) => updateField("offer_target", "doelgroep_specifiek", v)}
+                    value={data.target.doelgroep_specifiek}
+                    onChange={(v) => updateField("target", "doelgroep_specifiek", v)}
                     minLabel="Niet specifiek"
                     maxLabel="Zeer specifiek"
                   />
@@ -325,8 +370,8 @@ const IntakeForm = () => {
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">€</span>
                     <Input
-                      value={data.offer_target.klantwaarde}
-                      onChange={(e) => updateField("offer_target", "klantwaarde", e.target.value)}
+                      value={data.target.klantwaarde}
+                      onChange={(e) => updateField("target", "klantwaarde", e.target.value)}
                       placeholder="Bijv. 500"
                       className="bg-card pl-7"
                     />
@@ -335,7 +380,8 @@ const IntakeForm = () => {
               </>
             )}
 
-            {step === 3 && (
+            {/* STEP 4 — Huidige marketing & website */}
+            {step === 4 && (
               <>
                 <div>
                   <Label>Welke marketingkanalen gebruiken jullie actief?</Label>
@@ -367,110 +413,67 @@ const IntakeForm = () => {
                   </div>
                 </div>
                 <div>
-                  <Label>Wat levert marketing momenteel op?</Label>
+                  <Label>Hoeveel leads of aanvragen krijgen jullie per maand (ongeveer)?</Label>
                   <Input
-                    value={data.marketing.resultaat}
-                    onChange={(e) => updateField("marketing", "resultaat", e.target.value)}
-                    placeholder="Bijv. leads, omzet, geen duidelijk beeld"
+                    value={data.marketing.leads_per_maand}
+                    onChange={(e) => updateField("marketing", "leads_per_maand", e.target.value)}
+                    placeholder="Bijv. 10, 50, geen idee"
                     className="bg-card"
                   />
                 </div>
                 <div>
-                  <Label>Hoe stabiel is de instroom van leads/opdrachten?</Label>
-                  <ScaleInput
-                    value={data.marketing.lead_stabiliteit}
-                    onChange={(v) => updateField("marketing", "lead_stabiliteit", v)}
-                    minLabel="Zeer wisselend"
-                    maxLabel="Zeer stabiel"
-                  />
-                </div>
-              </>
-            )}
-
-            {step === 4 && (
-              <>
-                <div>
                   <Label>Hoe tevreden zijn jullie over de prestaties van de website?</Label>
                   <ScaleInput
-                    value={data.website.tevredenheid}
-                    onChange={(v) => updateField("website", "tevredenheid", v)}
+                    value={data.marketing.website_tevredenheid}
+                    onChange={(v) => updateField("marketing", "website_tevredenheid", v)}
                     minLabel="Niet tevreden"
                     maxLabel="Zeer tevreden"
                   />
                 </div>
-                <div>
-                  <Label>Wat is het belangrijkste doel van de website?</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {DOEL_OPTIONS.map((opt) => (
-                      <OptionButton
-                        key={opt}
-                        selected={data.website.doel === opt}
-                        onClick={() => updateField("website", "doel", opt)}
-                      >
-                        {opt}
-                      </OptionButton>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <Label>Waar haken bezoekers volgens jullie af?</Label>
-                  <Textarea
-                    value={data.website.afhaakmomenten}
-                    onChange={(e) => updateField("website", "afhaakmomenten", e.target.value)}
-                    placeholder="Bijv. na de homepage, op de prijspagina, bij het contactformulier..."
-                    rows={3}
-                    className="bg-card resize-none"
-                  />
-                </div>
               </>
             )}
 
+            {/* STEP 5 — Samenwerking & verwachtingen */}
             {step === 5 && (
               <>
                 <div>
-                  <Label>Hoe worden leads momenteel opgevolgd?</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {OPVOLGING_OPTIONS.map((opt) => (
-                      <OptionButton
-                        key={opt}
-                        selected={data.process.opvolging === opt}
-                        onClick={() => updateField("process", "opvolging", opt)}
-                      >
-                        {opt}
-                      </OptionButton>
-                    ))}
-                  </div>
-                </div>
-                <div>
                   <Label>Wat is momenteel de grootste bottleneck in groei?</Label>
                   <Textarea
-                    value={data.process.bottleneck}
-                    onChange={(e) => updateField("process", "bottleneck", e.target.value)}
+                    value={data.samenwerking.bottleneck}
+                    onChange={(e) => updateField("samenwerking", "bottleneck", e.target.value)}
                     placeholder="Bijv. te weinig leads, lage conversie, geen capaciteit..."
                     rows={3}
                     className="bg-card resize-none"
                   />
                 </div>
                 <div>
-                  <Label>Wat willen jullie de komende 3–6 maanden bereiken?</Label>
+                  <Label>Wat verwachten jullie van Lynqed?</Label>
                   <Textarea
-                    value={data.process.doelen}
-                    onChange={(e) => updateField("process", "doelen", e.target.value)}
-                    placeholder="Bijv. meer leads, hogere omzet, betere website..."
+                    value={data.samenwerking.verwachtingen}
+                    onChange={(e) => updateField("samenwerking", "verwachtingen", e.target.value)}
+                    placeholder="Bijv. strategisch advies, uitvoering, sparringpartner..."
                     rows={3}
                     className="bg-card resize-none"
                   />
                 </div>
-              </>
-            )}
+                <div>
+                  <Label>Wie zijn er betrokken bij dit traject?</Label>
+                  <Input
+                    value={data.samenwerking.betrokkenen}
+                    onChange={(e) => updateField("samenwerking", "betrokkenen", e.target.value)}
+                    placeholder="Bijv. eigenaar, marketingmanager, extern bureau"
+                    className="bg-card"
+                  />
+                </div>
 
-            {step === 6 && (
-              <>
+                <div className="h-px bg-border" />
+                <p className="text-sm font-medium text-foreground">Contactgegevens</p>
+
                 <div>
                   <Label>Naam</Label>
                   <Input
-                    value={data.contact.naam}
-                    onChange={(e) => updateField("contact", "naam", e.target.value)}
+                    value={data.samenwerking.naam}
+                    onChange={(e) => updateField("samenwerking", "naam", e.target.value)}
                     placeholder="Volledige naam"
                     className="bg-card"
                   />
@@ -479,8 +482,8 @@ const IntakeForm = () => {
                   <Label>E-mailadres</Label>
                   <Input
                     type="email"
-                    value={data.contact.email}
-                    onChange={(e) => updateField("contact", "email", e.target.value)}
+                    value={data.samenwerking.email}
+                    onChange={(e) => updateField("samenwerking", "email", e.target.value)}
                     placeholder="naam@bedrijf.nl"
                     className="bg-card"
                   />
@@ -489,8 +492,8 @@ const IntakeForm = () => {
                   <Label>Telefoonnummer (optioneel)</Label>
                   <Input
                     type="tel"
-                    value={data.contact.telefoon}
-                    onChange={(e) => updateField("contact", "telefoon", e.target.value)}
+                    value={data.samenwerking.telefoon}
+                    onChange={(e) => updateField("samenwerking", "telefoon", e.target.value)}
                     placeholder="+31 6 ..."
                     className="bg-card"
                   />
