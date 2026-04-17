@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -56,13 +56,64 @@ const MARKETING_KANALEN = ["Google Ads", "SEO", "Social ads", "E-mailmarketing",
 const BUDGET_OPTIONS = ["€0 – €500", "€500 – €2.000", "€2.000 – €5.000", "€5.000 – €15.000", "€15.000+"];
 const KLANT_OPTIONS = ["Particulier", "Zakelijk (B2B)", "Beide"];
 
+const STORAGE_KEY = "lynqed_intake";
+const STEP_KEY = "lynqed_step";
+
+const isStorageAvailable = () => {
+  try {
+    const test = "__lynqed_test__";
+    localStorage.setItem(test, test);
+    localStorage.removeItem(test);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const IntakeForm = () => {
-  const [step, setStep] = useState(0);
-  const [data, setData] = useState<FormData>(initialData);
+  const storageAvailable = typeof window !== "undefined" && isStorageAvailable();
+
+  const [step, setStep] = useState<number>(() => {
+    if (!storageAvailable) return 0;
+    const saved = localStorage.getItem(STEP_KEY);
+    return saved ? Math.min(Math.max(parseInt(saved, 10) || 0, 0), 5) : 0;
+  });
+  const [data, setData] = useState<FormData>(() => {
+    if (!storageAvailable) return initialData;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...initialData, ...parsed };
+      }
+    } catch {
+      /* ignore */
+    }
+    return initialData;
+  });
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalSteps = 5;
+
+  // Persist data + step on change
+  useEffect(() => {
+    if (!storageAvailable || submitted) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch {
+      /* ignore */
+    }
+  }, [data, storageAvailable, submitted]);
+
+  useEffect(() => {
+    if (!storageAvailable || submitted) return;
+    try {
+      localStorage.setItem(STEP_KEY, String(step));
+    } catch {
+      /* ignore */
+    }
+  }, [step, storageAvailable, submitted]);
 
   const updateField = <K extends keyof FormData>(
     section: K,
@@ -98,6 +149,10 @@ const IntakeForm = () => {
       if (error) throw error;
       toast.success("Intake succesvol verstuurd!");
       setSubmitted(true);
+      if (storageAvailable) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STEP_KEY);
+      }
     } catch (err) {
       console.error("Submit error:", err);
       toast.error("Er ging iets mis bij het versturen. Probeer het opnieuw.");
@@ -118,10 +173,10 @@ const IntakeForm = () => {
             <img src={lynqedLogo} alt="Lynqed" className="h-12" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-primary-foreground leading-tight">
-            Intake – inzicht in jouw bedrijf en marketing
+            De start van onze samenwerking
           </h1>
           <p className="text-primary-foreground/75 text-lg leading-relaxed max-w-md mx-auto">
-            Deze intake helpt om scherp te krijgen waar de grootste groeikansen liggen binnen jouw marketing en website. Op basis hiervan bereiden we een gerichte analyse en voorstel voor.
+            Deze intake helpt om snel inzicht te krijgen in jouw bedrijf, marketing en groeikansen. Op basis hiervan maken we een gerichte analyse en voorstel.
           </p>
           <div className="pt-4">
             <Button
@@ -129,11 +184,18 @@ const IntakeForm = () => {
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-10 py-6 text-base font-semibold rounded-xl shadow-lg"
             >
-              Start intake
+              Start met de intake
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
-          <p className="text-primary-foreground/40 text-sm">Duurt ongeveer 5–8 minuten</p>
+          <p className="text-primary-foreground/40 text-sm">
+            Duurt ongeveer 5–8 minuten • je kunt tussendoor stoppen en later verdergaan
+          </p>
+          {!storageAvailable && (
+            <p className="text-primary-foreground/50 text-xs">
+              Let op: bij verversen van de pagina kunnen gegevens verloren gaan
+            </p>
+          )}
         </div>
       </div>
     );
