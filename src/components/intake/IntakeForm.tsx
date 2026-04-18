@@ -211,10 +211,13 @@ const IntakeForm = () => {
           </div>
           <CheckCircle2 className="h-14 w-14 text-primary mx-auto" />
           <h1 className="text-3xl font-bold text-primary-foreground">
-            Bedankt – we gaan hiermee aan de slag
+            Intake compleet — dit is de basis voor de volgende stap
           </h1>
           <p className="text-primary-foreground/75 text-lg leading-relaxed">
-            Op basis van deze intake bereiden we een gerichte analyse voor die we meenemen in de volgende stap.
+            Op basis van jouw antwoorden maken we een gerichte analyse van jullie situatie en groeikansen. Binnen 2 werkdagen neem ik persoonlijk contact met je op om de volgende stap door te nemen.
+          </p>
+          <p className="text-primary-foreground/60 text-sm">
+            Tot snel — team Lynqed
           </p>
           <div className="pt-4">
             <a
