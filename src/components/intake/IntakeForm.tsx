@@ -214,7 +214,7 @@ const IntakeForm = () => {
             Intake compleet — dit is de basis voor de volgende stap
           </h1>
           <p className="text-primary-foreground/75 text-lg leading-relaxed">
-            Op basis van jouw antwoorden maken we een gerichte analyse van jullie situatie en groeikansen. Binnen 2 werkdagen neem ik persoonlijk contact met je op om de volgende stap door te nemen.
+            Op basis van jullie antwoorden maken we een gerichte analyse van jullie situatie en groeikansen. Binnen 2 werkdagen nemen we persoonlijk contact met jullie op om de volgende stap door te nemen.
           </p>
           <p className="text-primary-foreground/60 text-sm">
             Tot snel — team Lynqed
